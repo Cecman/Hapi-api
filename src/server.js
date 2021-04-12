@@ -1,6 +1,7 @@
 require("dotenv").config();
 const Hapi = require("@hapi/hapi");
-const { helloHandler, wellDoneHandler } = require("./route");
+require("./DB/connection");
+const { helloHandler, wellDoneHandler } = require("../api/routes");
 
 const init = async () => {
   const server = Hapi.Server({
