@@ -1,7 +1,7 @@
 const { Test, validate } = require("../src/DB/models/test");
 const Boom = require("@hapi/boom");
 
-const getAllUsersHandler = {
+const getAllUsers = {
   method: "GET",
   path: "/",
   handler: async (request, h) => {
@@ -13,7 +13,7 @@ const getAllUsersHandler = {
   },
 };
 
-const createUserHandler = {
+const createUser = {
   method: "POST",
   path: "/",
   handler: async (request, h) => {
@@ -31,4 +31,26 @@ const createUserHandler = {
   },
 };
 
-module.exports = { getAllUsersHandler, createUserHandler };
+const updateUser = {
+  method: "PATCH",
+  path: "/{id}",
+  handler: async (request, h) => {
+    const { error } = validate(request.payload);
+
+    if (error) {
+      return Boom.badRequest(error.details[0].message);
+    }
+
+    await Test.update(
+      { address: request.payload.address },
+      {
+        where: { id: request.params.id },
+      }
+    );
+    //return updated document (if this query isnt performed it return a number of updated documents instead)
+    const updated = await Test.findByPk(request.params.id);
+    return h.response(updated);
+  },
+};
+
+module.exports = { getAllUsers, createUser, updateUser };
