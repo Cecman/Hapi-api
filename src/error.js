@@ -1,13 +1,13 @@
 const Boom = require("@hapi/boom");
 
-function asyncWrapHandler(handler) {
+function asyncTcHandler(handler) {
   return async (request, h) => {
     try {
-      return handler(request, h);
+      return await handler(request, h);
     } catch (err) {
       return Boom.badImplementation(err);
     }
   };
 }
 
-module.exports = asyncWrapHandler;
+module.exports = asyncTcHandler;

@@ -1,13 +1,12 @@
 const { Test, validate } = require("../src/DB/models/test");
-const asyncWrapHandler = require("./error");
+const asyncTcHandler = require("../src/error");
 const Boom = require("@hapi/boom");
 
 const getAllUsers = {
   method: "GET",
   path: "/",
-  handler: asyncWrapHandler(async (request, h) => {
+  handler: asyncTcHandler(async (request, h) => {
     const tests = await Test.findAll();
-    console.log(tests);
     if (tests.length < 1) {
       return Boom.notFound("There are no users registered");
     }
@@ -18,7 +17,7 @@ const getAllUsers = {
 const createUser = {
   method: "POST",
   path: "/",
-  handler: asyncWrapHandler(async (request, h) => {
+  handler: asyncTcHandler(async (request, h) => {
     const { error } = validate(request.payload);
 
     if (error) {
@@ -35,7 +34,7 @@ const createUser = {
 const updateUser = {
   method: "PATCH",
   path: "/{id}",
-  handler: asyncWrapHandler(async (request, h) => {
+  handler: asyncTcHandler(async (request, h) => {
     const { error } = validate(request.payload);
 
     if (error) {
@@ -48,7 +47,8 @@ const updateUser = {
         where: { id: request.params.id },
       }
     );
-    //return updated document (if this query isnt performed it return a number of updated documents instead)
+    //return updated document (if this query isnt performed
+    //it returns a number of updated documents instead)
     const updated = await Test.findByPk(request.params.id);
     return h.response(updated);
   }),
@@ -57,8 +57,9 @@ const updateUser = {
 const deleteUser = {
   method: "DELETE",
   path: "/{id}",
-  handler: asyncWrapHandler(async (request, h) => {
-    //performed in order to return the deleted document. Otherwise only a number of documents(rows) is returned
+  handler: asyncTcHandler(async (request, h) => {
+    //performed in order to return the deleted document.
+    //Otherwise only a number of documents(rows) is returned
     const deleted = await Test.findOne({
       where: {
         id: request.params.id,

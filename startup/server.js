@@ -1,23 +1,14 @@
 require("dotenv").config();
 const Hapi = require("@hapi/hapi");
-require("./DB/connection");
-const {
-  getAllUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-} = require("../api/routes");
+require("../src/DB/connection");
+const router = require("./router");
 
 const init = async () => {
   const server = Hapi.Server({
     port: process.env.PORT || 5000,
     host: process.env.HOST,
   });
-
-  server.route(getAllUsers);
-  server.route(createUser);
-  server.route(updateUser);
-  server.route(deleteUser);
+  router(server);
 
   await server.start();
   console.log(`Server is running on port ${process.env.PORT}`);
