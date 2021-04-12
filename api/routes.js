@@ -2,7 +2,7 @@ const helloHandler = {
   method: "GET",
   path: "/",
   handler: (request, h) => {
-    return "Hello World";
+    return h.response(result);
   },
 };
 
@@ -16,7 +16,3 @@ const wellDoneHandler = {
 };
 
 module.exports = { helloHandler, wellDoneHandler };
-
-
-
-
