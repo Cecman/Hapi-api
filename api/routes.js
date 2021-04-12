@@ -23,11 +23,11 @@ const createUser = {
     if (error) {
       return Boom.badRequest(error.details[0].message);
     }
-    const jane = await Test.create({
+    const user = await Test.create({
       name: request.payload.name,
       address: request.payload.address,
     });
-    return h.response(jane);
+    return h.response(user);
   }),
 };
 
