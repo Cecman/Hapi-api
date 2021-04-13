@@ -1,9 +1,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../../src/DB/connection");
-// const { User } = require("../../src/DB/models/user");
 const Joi = require("joi");
 const Boom = require("@hapi/boom");
-// const asyncTcHandler = require("../../src/error");
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
