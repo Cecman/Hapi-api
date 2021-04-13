@@ -42,7 +42,7 @@ const createUser = {
 
     const createdUser = await new Promise((resolve, reject) => {
       const sql = "INSERT INTO users set ?";
-      db.query(sql, user, (err, result, fields) => {
+      db.query(sql, user, (err, result) => {
         if (err) {
           return reject(err);
         }
@@ -51,6 +51,30 @@ const createUser = {
     });
     return h.response(createdUser);
   },
+};
+
+const updateUser = {
+  method: "PATCH",
+  path: "/{id}",
+  handler: asyncTcHandler(async (request, h) => {
+    const { error } = validate(request.payload);
+
+    if (error) {
+      return Boom.badRequest(error.details[0].message);
+    }
+
+    const updateUser = {
+      name: request.payload.name,
+      address: request.payload.address,
+      password: await bcrypt.hash(request.payload.password, SALT),
+    };
+    const sql = `UPDATE users SET ? WHERE id = '${request.params.id}'`;
+    db.query(sql, updateUser, (err, result) => {
+      if (err) throw err;
+      console.log(result);
+    });
+    return h.response(`User ${request.params.id} was updated`);
+  }),
 };
 
 // const getAllUsers = {
@@ -137,4 +161,4 @@ const createUser = {
 // };
 
 // module.exports = { getAllUsers, createUser, updateUser, deleteUser };
-module.exports = { getAllUsers, createUser };
+module.exports = { getAllUsers, createUser, updateUser };

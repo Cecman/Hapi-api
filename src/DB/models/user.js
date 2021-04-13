@@ -1,20 +1,4 @@
-const { DataTypes } = require("sequelize");
-// const sequelize = require("../connection");
 const Joi = require("joi");
-
-// const User = sequelize.define("User", {
-//   name: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   password: {
-//     type: DataTypes.STRING,
-//   },
-//   address: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-// });
 
 const schema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
@@ -36,5 +20,3 @@ const validate = (user) => {
 };
 
 module.exports = validate;
-// User.sync();
-// module.exports = { User, validate };
