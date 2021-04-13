@@ -1,16 +1,19 @@
-const { Test, validate } = require("../src/DB/models/test");
+require("dotenv").config();
+const { User, validate } = require("../src/DB/models/user");
 const asyncTcHandler = require("../src/error");
 const Boom = require("@hapi/boom");
+const bcrypt = require("bcrypt");
+const SALT = Number(process.env.SALT);
 
 const getAllUsers = {
   method: "GET",
   path: "/",
   handler: asyncTcHandler(async (request, h) => {
-    const tests = await Test.findAll();
-    if (tests.length < 1) {
+    const users = await User.findAll();
+    if (users.length < 1) {
       return Boom.notFound("There are no users registered");
     }
-    return h.response(tests);
+    return h.response(users);
   }),
 };
 
@@ -23,10 +26,15 @@ const createUser = {
     if (error) {
       return Boom.badRequest(error.details[0].message);
     }
-    const user = await Test.create({
+
+    const hashed = await bcrypt.hash(request.payload.password, SALT);
+    // console.log(hashed);
+    const user = await User.create({
       name: request.payload.name,
+      password: hashed,
       address: request.payload.address,
     });
+
     return h.response(user);
   }),
 };
@@ -41,15 +49,15 @@ const updateUser = {
       return Boom.badRequest(error.details[0].message);
     }
 
-    await Test.update(
-      { address: request.payload.address },
+    await User.update(
+      { name: request.payload.name, address: request.payload.address },
       {
         where: { id: request.params.id },
       }
     );
     //return updated document (if this query isnt performed
     //it returns a number of updated documents instead)
-    const updated = await Test.findByPk(request.params.id);
+    const updated = await User.findByPk(request.params.id);
     return h.response(updated);
   }),
 };
@@ -60,7 +68,7 @@ const deleteUser = {
   handler: asyncTcHandler(async (request, h) => {
     //performed in order to return the deleted document.
     //Otherwise only a number of documents(rows) is returned
-    const deleted = await Test.findOne({
+    const deleted = await User.findOne({
       where: {
         id: request.params.id,
       },
@@ -71,7 +79,7 @@ const deleteUser = {
     }
 
     //delete the document(row)
-    await Test.destroy({
+    await User.destroy({
       where: {
         id: request.params.id,
       },
