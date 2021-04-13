@@ -1,6 +1,6 @@
 require("dotenv").config();
-const { User, validate } = require("../src/DB/models/user");
-const asyncTcHandler = require("../src/error");
+const { User, validate } = require("../../src/DB/models/user");
+const asyncTcHandler = require("../../src/error");
 const Boom = require("@hapi/boom");
 const bcrypt = require("bcrypt");
 const SALT = Number(process.env.SALT);
@@ -87,5 +87,6 @@ const deleteUser = {
     return h.response(deleted);
   }),
 };
+
 
 module.exports = { getAllUsers, createUser, updateUser, deleteUser };

@@ -26,7 +26,7 @@ const schema = Joi.object({
     )
     .message(
       "A password must not contain a whitespace and must contain 1 Uppercase, Number and a Special character(!@# etc.)"
-    ),
+    ).required(),
   address: Joi.string().min(4).max(100),
 });
 
