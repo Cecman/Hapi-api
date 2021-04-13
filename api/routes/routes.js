@@ -1,12 +1,12 @@
 require("dotenv").config();
-const { User, validate } = require("../../src/DB/models/user");
+const validate = require("../../src/DB/models/user");
 const asyncTcHandler = require("../../src/error");
 const Boom = require("@hapi/boom");
 const bcrypt = require("bcrypt");
 const db = require("../../src/DB/connection");
 const SALT = Number(process.env.SALT);
 
-const getUsers = {
+const getAllUsers = {
   method: "GET",
   path: "/",
   handler: async (request, h) => {
@@ -16,7 +16,40 @@ const getUsers = {
         return resolve(results);
       });
     });
+
+    if (users.length < 1) {
+      return Boom.notFound("There are no users registered");
+    }
     return h.response(users);
+  },
+};
+
+const createUser = {
+  method: "POST",
+  path: "/",
+  handler: async (request, h) => {
+    const { error } = validate(request.payload);
+    if (error) {
+      return Boom.badRequest(error.details[0].message);
+    }
+    const hashed = await bcrypt.hash(request.payload.password, SALT);
+
+    const user = {
+      name: request.payload.name,
+      password: hashed,
+      address: request.payload.address,
+    };
+
+    const createdUser = await new Promise((resolve, reject) => {
+      const sql = "INSERT INTO users set ?";
+      db.query(sql, user, (err, result, fields) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(`User was added in our DB`);
+      });
+    });
+    return h.response(createdUser);
   },
 };
 
@@ -104,4 +137,4 @@ const getUsers = {
 // };
 
 // module.exports = { getAllUsers, createUser, updateUser, deleteUser };
-module.exports = getUsers;
+module.exports = { getAllUsers, createUser };
