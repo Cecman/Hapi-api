@@ -54,6 +54,10 @@ const loginUser = {
 
     return h.response("Logged In");
   },
+  options: {
+    description: 'Login user',
+    tags: ['api']
+  }
 };
 
 module.exports = loginUser;

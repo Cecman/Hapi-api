@@ -22,6 +22,10 @@ const getAllUsers = {
     }
     return h.response(users);
   },
+  options: {
+    description: "Get all users",
+    tags: ["api"],
+  },
 };
 
 const createUser = {
@@ -51,6 +55,10 @@ const createUser = {
     });
     return h.response(createdUser);
   },
+  options: {
+    description: "Create a user",
+    tags: ["api"],
+  },
 };
 
 const updateUser = {
@@ -75,6 +83,10 @@ const updateUser = {
     });
     return h.response(`User ${request.params.id} was updated`);
   }),
+  options: {
+    description: "Update user",
+    tags: ["api"],
+  },
 };
 
 const deleteUser = {
@@ -108,6 +120,10 @@ const deleteUser = {
       });
     });
     return h.response(deletedUser);
+  },
+  options: {
+    description: "Delete user",
+    tags: ["api"],
   },
 };
 

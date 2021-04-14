@@ -5,6 +5,5 @@ module.exports = function (server) {
   server.route(createUser);
   server.route(updateUser);
   server.route(deleteUser);
-
   server.route(loginUser);
 };
