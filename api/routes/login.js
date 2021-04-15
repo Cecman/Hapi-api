@@ -4,7 +4,7 @@ const Joi = require("joi");
 const Boom = require("@hapi/boom");
 
 const schema = Joi.object({
-  name: Joi.string().min(3).max(30).required(),
+  email: Joi.string().min(4).max(100).email().required(),
   password: Joi.string()
     .pattern(
       new RegExp(
@@ -32,7 +32,7 @@ const loginUser = {
 
     const user = await new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM users WHERE name='${request.payload.name}'`, //just a sample implementation, check for a unique value in the table (email)
+        `SELECT * FROM users WHERE email='${request.payload.email}'`, 
         (err, results, fields) => {
           if (err) return reject(err);
           return resolve(results);

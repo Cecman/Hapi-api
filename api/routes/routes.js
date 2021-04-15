@@ -11,7 +11,7 @@ const getAllUsers = {
   path: "/",
   handler: async (request, h) => {
     const users = await new Promise((resolve, reject) => {
-      db.query("SELECT * FROM users", (err, results, fields) => {
+      db.query("SELECT name, email FROM users", (err, results, fields) => {
         if (err) return reject(err);
         return resolve(results);
       });
@@ -36,16 +36,30 @@ const createUser = {
     if (error) {
       return Boom.badRequest(error.details[0].message);
     }
-    const hashed = await bcrypt.hash(request.payload.password, SALT);
+    
+    const isUser = await new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM users WHERE email='${request.payload.email}'`,
+        (err, result) => {
+          if (err) return reject(err);
+          return resolve(result);
+        }
+      );
+    });
+    console.log(isUser);
 
+    if (isUser) {
+      return Boom.unauthorized("A user with that email already exists");
+    }
+    const hashed = await bcrypt.hash(request.payload.password, SALT);
+    const sql = "INSERT INTO users SET ?";
     const user = {
       name: request.payload.name,
       password: hashed,
-      address: request.payload.address,
+      email: request.payload.email,
     };
 
     const createdUser = await new Promise((resolve, reject) => {
-      const sql = "INSERT INTO users set ?";
       db.query(sql, user, (err, result) => {
         if (err) {
           return reject(err);
@@ -71,12 +85,13 @@ const updateUser = {
       return Boom.badRequest(error.details[0].message);
     }
 
+    const sql = `UPDATE users SET ? WHERE id = '${request.params.id}'`;
     const updateUser = {
       name: request.payload.name,
-      address: request.payload.address,
+      email: request.payload.email,
       password: await bcrypt.hash(request.payload.password, SALT),
     };
-    const sql = `UPDATE users SET ? WHERE id = '${request.params.id}'`;
+
     db.query(sql, updateUser, (err, result) => {
       if (err) throw err;
       console.log(result);
@@ -96,7 +111,7 @@ const deleteUser = {
     const userId = request.params.id;
     const user = await new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM users WHERE id=${userId}`, //just a sample implementation, check for a unique value in the table (email)
+        `SELECT * FROM users WHERE id=${userId} LIMIT 1`, //just a sample implementation, check for a unique value in the table (email)
         (err, results, fields) => {
           if (err) {
             return reject(err);

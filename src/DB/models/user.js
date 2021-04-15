@@ -12,7 +12,7 @@ const schema = Joi.object({
       "A password must not contain a whitespace, be at least 8 characters long and must contain 1 Uppercase, Number and a Special character(!@# etc.)"
     )
     .required(),
-  address: Joi.string().min(4).max(100).required(),
+  email: Joi.string().min(4).max(100).email().required(),
 });
 
 const validate = (user) => {
