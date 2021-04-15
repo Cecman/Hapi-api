@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const db = require("../../src/DB/connection");
 const Joi = require("joi");
 const Boom = require("@hapi/boom");
+const findUser = require("../../src/DB/findUser");
 
 const schema = Joi.object({
   email: Joi.string().min(4).max(100).email().required(),
@@ -24,40 +25,31 @@ const validate = (request) => {
 const loginUser = {
   method: "POST",
   path: "/login",
-  handler: async (request, h) => {
-    const { error } = validate(request.payload);
-    if (error) {
-      return Boom.badRequest(error.details[0].message);
-    }
-
-    const user = await new Promise((resolve, reject) => {
-      db.query(
-        `SELECT * FROM users WHERE email='${request.payload.email}'`, 
-        (err, results, fields) => {
-          if (err) return reject(err);
-          return resolve(results);
-        }
-      );
-    });
-    
-    if (!user) {
-      return Boom.badRequest("Invalid name or password");
-    }
-    console.log(user[0].password);
-    const validPassword = await bcrypt.compare(
-      request.payload.password,
-      user[0].password
-    );
-    if (!validPassword) {
-      return Boom.badRequest("Invalid name or password");
-    }
-
-    return h.response("Logged In");
-  },
   options: {
-    description: 'Login user',
-    tags: ['api']
-  }
+    description: "Login user",
+    tags: ["api"],
+    handler: async (request, h) => {
+      const { error } = validate(request.payload);
+      if (error) {
+        return Boom.badRequest(error.details[0].message);
+      }
+
+      const user = await findUser(request.payload.email);
+      if (!user) {
+        return Boom.badRequest("Invalid name or password");
+      }
+
+      const validPassword = await bcrypt.compare(
+        request.payload.password,
+        user[0].password
+      );
+      if (!validPassword) {
+        return Boom.badRequest("Invalid name or password");
+      }
+
+      return h.response("Logged In");
+    },
+  },
 };
 
 module.exports = loginUser;
