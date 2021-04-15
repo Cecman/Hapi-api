@@ -88,9 +88,6 @@ const updateUser = {
         return Boom.unauthorized("A user with that email already exists");
       }
 
-      if (user[0].email === request.payload.email) {
-        return Boom.unauthorized("A user with that email already exists");
-      }
       const sql = `UPDATE users SET ? WHERE id = '${request.params.id}'`;
       const updateUser = {
         name: request.payload.name,
