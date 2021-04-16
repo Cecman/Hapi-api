@@ -2,15 +2,15 @@ require("dotenv").config();
 const validate = require("../../src/DB/models/user");
 const asyncTcHandler = require("../../src/error");
 const Boom = require("@hapi/boom");
-const bcrypt = require("bcrypt");
 const db = require("../../src/DB/connection");
-const SALT = Number(process.env.SALT);
+
 const {
   findUserById,
   findUserByEmail,
   findAllUsers,
 } = require("../../src/DB/findUser");
 const updateUserById = require("../../src/DB/updateUser");
+const createUser = require("../../src/DB/createUser");
 
 const getAllUsers = {
   method: "GET",
@@ -25,7 +25,7 @@ const getAllUsers = {
   },
 };
 
-const createUser = {
+const postUser = {
   method: "POST",
   path: "/",
   options: {
@@ -36,27 +36,13 @@ const createUser = {
       if (error) {
         return Boom.badRequest(error.details[0].message);
       }
+      const { name, email, password } = request.payload;
 
-      const isUser = await findUserByEmail(request.payload.email);
+      const isUser = await findUserByEmail(email);
       if (isUser.length === 1) {
         return Boom.unauthorized("A user with that email already exists");
       }
-
-      const sql = "INSERT INTO users SET ?";
-      const user = {
-        name: request.payload.name,
-        password: await bcrypt.hash(request.payload.password, SALT),
-        email: request.payload.email,
-      };
-
-      const createdUser = await new Promise((resolve, reject) => {
-        db.query(sql, user, (err, result) => {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(`User was added in our DB`);
-        });
-      });
+      const createdUser = await createUser(name, email, password);
       return h.response(createdUser);
     }),
   },
@@ -121,4 +107,4 @@ const deleteUser = {
   },
 };
 
-module.exports = { getAllUsers, createUser, updateUser, deleteUser };
+module.exports = { getAllUsers, postUser, updateUser, deleteUser };

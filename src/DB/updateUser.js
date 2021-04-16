@@ -12,10 +12,7 @@ const updateUserById = async (id, name, email, password) => {
 
   const updated = await new Promise((resolve, reject) => {
     db.query(sql, updateUser, (err, result) => {
-      if (err) {
-        reject(err);
-      }
-      console.log(result);
+      if (err) reject(err);
       resolve(result);
     });
   });
