@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const db = require("../../src/DB/connection");
 const SALT = Number(process.env.SALT);
 const { findUserById, findUserByEmail } = require("../../src/DB/findUser");
+const updateUserById = require("../../src/DB/updateUser");
 
 const getAllUsers = {
   method: "GET",
@@ -77,29 +78,23 @@ const updateUser = {
       if (error) {
         return Boom.badRequest(error.details[0].message);
       }
+      const id = request.params.id;
+      const { name, email, password } = request.payload;
 
-      const user = await findUserById(request.params.id);
+      const user = await findUserById(id);
       if (user.length < 1) {
         return Boom.notFound("There is no user with the given ID");
       }
 
-      const isEmailUsed = await findUserByEmail(request.payload.email);
+      const isEmailUsed = await findUserByEmail(email);
       if (isEmailUsed.length === 1) {
         return Boom.unauthorized("A user with that email already exists");
       }
 
-      const sql = `UPDATE users SET ? WHERE id = '${request.params.id}'`;
-      const updateUser = {
-        name: request.payload.name,
-        email: request.payload.email,
-        password: await bcrypt.hash(request.payload.password, SALT),
-      };
+      const updated = await updateUserById(id, name, email, password);
+      console.log(updated);
 
-      db.query(sql, updateUser, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-      });
-      return h.response(`User ${user[0].name} was updated`);
+      return h.response(updated);
     }),
   },
 };
