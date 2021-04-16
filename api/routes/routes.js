@@ -2,8 +2,6 @@ require("dotenv").config();
 const validate = require("../../src/DB/models/user");
 const asyncTcHandler = require("../../src/error");
 const Boom = require("@hapi/boom");
-const db = require("../../src/DB/connection");
-
 const {
   findUserById,
   findUserByEmail,
@@ -11,6 +9,7 @@ const {
 } = require("../../src/DB/findUser");
 const updateUserById = require("../../src/DB/updateUser");
 const createUser = require("../../src/DB/createUser");
+const deleteUserById = require("../../src/DB/deleteUser");
 
 const getAllUsers = {
   method: "GET",
@@ -94,14 +93,7 @@ const deleteUser = {
           "The user with the given ID does not exist in our DB"
         );
       }
-
-      const sql = `DELETE FROM users WHERE id='${userId}'`;
-      const deletedUser = await new Promise((resolve, reject) => {
-        db.query(sql, (err, result) => {
-          if (err) return reject(err);
-          return resolve(result);
-        });
-      });
+      const deletedUser = await deleteUserById(userId);
       return h.response(deletedUser);
     }),
   },
