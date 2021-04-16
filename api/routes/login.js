@@ -1,8 +1,7 @@
 const bcrypt = require("bcrypt");
-const db = require("../../src/DB/connection");
 const Joi = require("joi");
 const Boom = require("@hapi/boom");
-const findUser = require("../../src/DB/findUser");
+const { findUserByEmail } = require("../../src/DB/findUser");
 
 const schema = Joi.object({
   email: Joi.string().min(4).max(100).email().required(),
@@ -34,7 +33,7 @@ const loginUser = {
         return Boom.badRequest(error.details[0].message);
       }
 
-      const user = await findUser(request.payload.email);
+      const user = await findUserByEmail(request.payload.email);
       if (!user) {
         return Boom.badRequest("Invalid name or password");
       }

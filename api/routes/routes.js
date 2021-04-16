@@ -1,4 +1,3 @@
-require("dotenv").config();
 const validate = require("../../src/DB/models/user");
 const asyncTcHandler = require("../../src/error");
 const Boom = require("@hapi/boom");
