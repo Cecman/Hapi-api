@@ -1,10 +1,24 @@
 const db = require("../../src/DB/connection");
 
-const findUserByEmail = async(param) => {
+const findAllUsers = async () => {
+  const users = await new Promise((resolve, reject) => {
+    db.query("SELECT name, email FROM users", (err, results) => {
+      if (err) return reject(err);
+      return resolve(results);
+    });
+  });
+
+  if (users.length < 1) {
+    return Boom.notFound("There are no users registered");
+  }
+  return users;
+};
+
+const findUserByEmail = async (param) => {
   const user = await new Promise((resolve, reject) => {
     db.query(
       `SELECT * FROM users WHERE email='${param}'`,
-      (err, results, fields) => {
+      (err, results) => {
         if (err) {
           return reject(err);
         }
@@ -19,7 +33,7 @@ const findUserById = async (param) => {
   const user = await new Promise((resolve, reject) => {
     db.query(
       `SELECT * FROM users WHERE id='${param}'`,
-      (err, results, fields) => {
+      (err, results) => {
         if (err) {
           return reject(err);
         }
@@ -30,4 +44,4 @@ const findUserById = async (param) => {
   return user;
 };
 
-module.exports = { findUserByEmail, findUserById };
+module.exports = { findUserByEmail, findUserById, findAllUsers };

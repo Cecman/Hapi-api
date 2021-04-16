@@ -5,7 +5,11 @@ const Boom = require("@hapi/boom");
 const bcrypt = require("bcrypt");
 const db = require("../../src/DB/connection");
 const SALT = Number(process.env.SALT);
-const { findUserById, findUserByEmail } = require("../../src/DB/findUser");
+const {
+  findUserById,
+  findUserByEmail,
+  findAllUsers,
+} = require("../../src/DB/findUser");
 const updateUserById = require("../../src/DB/updateUser");
 
 const getAllUsers = {
@@ -15,16 +19,7 @@ const getAllUsers = {
     description: "Get all users",
     tags: ["api"],
     handler: asyncTcHandler(async (request, h) => {
-      const users = await new Promise((resolve, reject) => {
-        db.query("SELECT name, email FROM users", (err, results, fields) => {
-          if (err) return reject(err);
-          return resolve(results);
-        });
-      });
-
-      if (users.length < 1) {
-        return Boom.notFound("There are no users registered");
-      }
+      const users = await findAllUsers();
       return h.response(users);
     }),
   },
@@ -92,7 +87,6 @@ const updateUser = {
       }
 
       const updated = await updateUserById(id, name, email, password);
-      console.log(updated);
 
       return h.response(updated);
     }),
