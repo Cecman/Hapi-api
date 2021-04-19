@@ -7,6 +7,7 @@ const Inert = require("@hapi/inert");
 const Vision = require("@hapi/vision");
 const JWT = require("jsonwebtoken");
 const jwtAuth = require("hapi-auth-jwt2");
+const Boom = require("@hapi/boom");
 
 const init = async () => {
   const server = Hapi.Server({
@@ -30,17 +31,26 @@ const init = async () => {
   ]);
 
   const validate = async (decoded, request, h) => {
-    console.log(request.headers);
     const credentials = decoded;
-    return { isValid: true, credentials };
+
+    if (request.plugins["hapi-auth-jwt2"]) {
+      credentials.extraInfo = request.plugins["hapi-auth-jwt2"].extraInfo;
+      return { isValid: true, credentials };
+    }
+    return { isValid: false };
   };
   const keyFun = async (decoded) => {
     if (decoded) {
+      console.log(decoded);
       const key = process.env.API_KEY;
       //console.log(key);
       if (key) {
-        return { key, additonal: "More info" };
+        return { key, additonal: "Extra info here if required" };
+      } else {
+        return Boom.unauthorized("Key not found");
       }
+    } else {
+      return Boom.badRequest("Invalid user");
     }
   };
 

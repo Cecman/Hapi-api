@@ -61,6 +61,7 @@ const updateUser = {
     tags: ["api"],
     auth: "jwt",
     handler: asyncTcHandler(async (request, h) => {
+      console.log(request.auth.credentials);
       const { error } = validate(request.payload);
       if (error) {
         return Boom.badRequest(error.details[0].message);
