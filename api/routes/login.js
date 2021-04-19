@@ -1,6 +1,8 @@
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
 const Boom = require("@hapi/boom");
+const JWT = require("jsonwebtoken");
 const { findUserByEmail } = require("../../src/DB/findUser");
 
 const schema = Joi.object({
@@ -27,14 +29,12 @@ const loginUser = {
   options: {
     description: "Login user",
     tags: ["api"],
-     auth: 'jwt',
+    auth: false,
     handler: async (request, h) => {
       const { error } = validate(request.payload);
       if (error) {
         return Boom.badRequest(error.details[0].message);
       }
-
-      console.log(request.headers);
 
       const user = await findUserByEmail(request.payload.email);
       if (!user) {
@@ -49,7 +49,9 @@ const loginUser = {
         return Boom.badRequest("Invalid name or password");
       }
 
-      return h.response("Logged In");
+      const token = JWT.sign(request.payload, process.env.API_KEY);
+      //sent token to response for simplicity and testing
+      return h.response(token).header("x-auth-token", token);
     },
   },
 };

@@ -37,13 +37,17 @@ const postUser = {
       if (error) {
         return Boom.badRequest(error.details[0].message);
       }
+
       const { name, email, password } = request.payload;
-      const token = JWT.sign(request.payload, process.env.API_KEY);
+
       const isUser = await findUserByEmail(email);
       if (isUser.length === 1) {
-        return Boom.unauthorized("A user with that email already exists");
+        return Boom.badRequest("A user with that email already exists");
       }
+
       const createdUser = await createUser(name, email, password);
+
+      const token = JWT.sign(request.payload, process.env.API_KEY);
       return h.response(createdUser).header("x-auth-token", token);
     }),
   },
@@ -55,6 +59,7 @@ const updateUser = {
   options: {
     description: "Update user",
     tags: ["api"],
+    auth: "jwt",
     handler: asyncTcHandler(async (request, h) => {
       const { error } = validate(request.payload);
       if (error) {
@@ -70,7 +75,7 @@ const updateUser = {
 
       const isEmailUsed = await findUserByEmail(email);
       if (isEmailUsed.length === 1) {
-        return Boom.unauthorized("A user with that email already exists");
+        return Boom.badRequest("A user with that email already exists");
       }
 
       const updated = await updateUserById(id, name, email, password);
@@ -86,6 +91,7 @@ const deleteUser = {
   options: {
     description: "Delete user",
     tags: ["api"],
+    auth: "jwt",
     handler: asyncTcHandler(async (request, h) => {
       const userId = request.params.id;
       const user = await findUserById(userId);
