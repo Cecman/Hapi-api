@@ -27,11 +27,14 @@ const loginUser = {
   options: {
     description: "Login user",
     tags: ["api"],
+     auth: 'jwt',
     handler: async (request, h) => {
       const { error } = validate(request.payload);
       if (error) {
         return Boom.badRequest(error.details[0].message);
       }
+
+      console.log(request.headers);
 
       const user = await findUserByEmail(request.payload.email);
       if (!user) {

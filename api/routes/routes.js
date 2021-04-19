@@ -1,3 +1,4 @@
+require("dotenv").config();
 const validate = require("../../src/DB/models/user");
 const asyncTcHandler = require("../../src/error");
 const Boom = require("@hapi/boom");
@@ -9,6 +10,7 @@ const {
 const updateUserById = require("../../src/DB/updateUser");
 const createUser = require("../../src/DB/createUser");
 const deleteUserById = require("../../src/DB/deleteUser");
+const JWT = require("jsonwebtoken");
 
 const getAllUsers = {
   method: "GET",
@@ -29,19 +31,20 @@ const postUser = {
   options: {
     description: "Create a user",
     tags: ["api"],
+    auth: false,
     handler: asyncTcHandler(async (request, h) => {
       const { error } = validate(request.payload);
       if (error) {
         return Boom.badRequest(error.details[0].message);
       }
       const { name, email, password } = request.payload;
-
+      const token = JWT.sign(request.payload, process.env.API_KEY);
       const isUser = await findUserByEmail(email);
       if (isUser.length === 1) {
         return Boom.unauthorized("A user with that email already exists");
       }
       const createdUser = await createUser(name, email, password);
-      return h.response(createdUser);
+      return h.response(createdUser).header("x-auth-token", token);
     }),
   },
 };
