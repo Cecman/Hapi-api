@@ -2,9 +2,9 @@ const db = require("../../src/DB/connection");
 
 const findAllUsers = async () => {
   const users = await new Promise((resolve, reject) => {
-    db.query("SELECT name, email FROM users", (err, results) => {
+    db.query("SELECT name, email FROM users", (err, users) => {
       if (err) reject(err);
-      resolve(results);
+      resolve(users);
     });
   });
 
@@ -14,30 +14,25 @@ const findAllUsers = async () => {
   return users;
 };
 
-const findUserByEmail = async (param) => {
+const findUserByEmail = async (email) => {
   const user = await new Promise((resolve, reject) => {
-    db.query(
-      `SELECT * FROM users WHERE email='${param}'`,
-      (err, results) => {
-        if (err) reject(err);
-        resolve(results);
-      }
-    );
+    db.query(`SELECT * FROM users WHERE email='${email}'`, (err, user) => {
+      if (err) reject(err);
+      resolve(user);
+    });
   });
   return user;
 };
 
-const findUserById = async (param) => {
+const findUserById = async (id) => {
   const user = await new Promise((resolve, reject) => {
-    db.query(
-      `SELECT * FROM users WHERE id='${param}'`,
-      (err, results) => {
-        if (err) return reject(err);
-        return resolve(results);
-      }
-    );
+    db.query(`SELECT * FROM users WHERE id='${id}'`, (err, user) => {
+      if (err) reject(err);
+      resolve(user);
+    });
   });
   return user;
 };
 
 module.exports = { findUserByEmail, findUserById, findAllUsers };
+
