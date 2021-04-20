@@ -10,7 +10,7 @@ const {
   createUserHandler,
   updateUserHandler,
   deleteUserHandler,
-} = require("./handlers/userHandlers");
+} = require("../handlers/userHandlers");
 
 const getAllUsers = {
   method: "GET",

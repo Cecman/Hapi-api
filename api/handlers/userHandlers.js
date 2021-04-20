@@ -1,8 +1,8 @@
 const JWT = require("jsonwebtoken");
-const { findAllUsers } = require("../../../src/DB/findUser");
-const updateUserById = require("../../../src/DB/updateUser");
-const createUser = require("../../../src/DB/createUser");
-const deleteUserById = require("../../../src/DB/deleteUser");
+const { findAllUsers } = require("../../src/DB/findUser");
+const updateUserById = require("../../src/DB/updateUser");
+const createUser = require("../../src/DB/createUser");
+const deleteUserById = require("../../src/DB/deleteUser");
 
 const findUsersHandler = async (request, h) => {
   const users = await findAllUsers();

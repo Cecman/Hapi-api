@@ -2,7 +2,7 @@ require("dotenv").config();
 const verifyUser = require("../../src/authentication/validateLoginCredentials");
 const verifyLoginInput = require("../../src/authentication/verifyLoginInput");
 const asyncTcHandler = require("../../src/error");
-const loginHandler = require("./handlers/loginHandlers");
+const loginHandler = require("../handlers/loginHandlers");
 
 const loginUser = {
   method: "POST",
