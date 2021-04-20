@@ -30,7 +30,10 @@ const postUser = {
     description: "Create a user",
     tags: ["api"],
     auth: false,
-    pre: [{ method: verifyUserInput, assign: "userInput" }],
+    pre: [
+      { method: verifyUserInput, assign: "userInput" },
+      { method: verifyUserEmail, assign: "userEmail" },
+    ],
     handler: asyncTcHandler(createUserHandler),
   },
 };

@@ -4,7 +4,7 @@ const { findUserByEmail, findUserById } = require("../DB/findUser");
 const verifyUserEmail = async (request, h) => {
   const user = await findUserByEmail(request.payload.email);
 
-  if (user >= 1) {
+  if (user.length >= 1) {
     return Boom.badRequest("A user with that email already exists");
   }
 
