@@ -1,17 +1,9 @@
-const db = require("../../src/DB/connection");
 const bcrypt = require("bcrypt");
 const Boom = require("@hapi/boom");
+const { findUserByEmail } = require("../DB/findUser");
 
 const verifyUser = async (request, h) => {
-  const user = await new Promise((resolve, reject) => {
-    db.query(
-      `SELECT * FROM users WHERE email='${request.payload.email}'`,
-      (err, user) => {
-        if (err) reject(err);
-        resolve(user);
-      }
-    );
-  });
+  const user = await findUserByEmail(request.payload.email);
 
   if (user.length >= 1) {
     const validPassword = await bcrypt.compare(
@@ -22,7 +14,7 @@ const verifyUser = async (request, h) => {
   }
 
   if (user.length < 1) {
-    return Boom.badRequest("Invalid name or password");
+    return Boom.badRequest("Invalid email or password");
   }
   return h.response(user);
 };

@@ -1,7 +1,7 @@
 require("dotenv").config();
 const JWT = require("jsonwebtoken");
-const verifyUser = require("../../src/authentication/validateCredentials");
-const verifyInput = require("../../src/authentication/verifyInput");
+const verifyUser = require("../../src/authentication/validateLoginCredentials");
+const verifyLoginInput = require("../../src/authentication/verifyLoginInput");
 
 const loginUser = {
   method: "POST",
@@ -11,7 +11,7 @@ const loginUser = {
     tags: ["api"],
     auth: false,
     pre: [
-      { method: verifyInput, assign: "input" },
+      { method: verifyLoginInput, assign: "input" },
       { method: verifyUser, assign: "user" },
     ],
     handler: async (request, h) => {

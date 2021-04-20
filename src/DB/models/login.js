@@ -1,5 +1,4 @@
 const Joi = require("joi");
-const Boom = require("@hapi/boom");
 
 const schema = Joi.object({
   email: Joi.string().min(4).max(100).email().required(),
@@ -15,13 +14,8 @@ const schema = Joi.object({
     .required(),
 });
 
-const verifyInput = (request, h) => {
-  const validate = schema.validate(request.payload);
-  const { error } = validate;
-  if (error) {
-    return Boom.badRequest(error.details[0].message);
-  }
-  return h.response(request.payload);
+const validate = (user) => {
+  return schema.validate(user);
 };
 
-module.exports = verifyInput;
+module.exports = validate;

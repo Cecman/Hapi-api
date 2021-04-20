@@ -11,6 +11,8 @@ const updateUserById = require("../../src/DB/updateUser");
 const createUser = require("../../src/DB/createUser");
 const deleteUserById = require("../../src/DB/deleteUser");
 const JWT = require("jsonwebtoken");
+const verifyUserInput = require("../../src/authentication/verifyUserInput");
+const verifyUser = require("../../src/authentication/validateLoginCredentials");
 
 const getAllUsers = {
   method: "GET",
@@ -32,16 +34,12 @@ const postUser = {
     description: "Create a user",
     tags: ["api"],
     auth: false,
+    pre: [{ method: verifyUserInput, assign: "userInput" }],
     handler: asyncTcHandler(async (request, h) => {
-      const { error } = validate(request.payload);
-      if (error) {
-        return Boom.badRequest(error.details[0].message);
-      }
-
       const { name, email, password } = request.payload;
 
       const isUser = await findUserByEmail(email);
-      if (isUser.length === 1) {
+      if (isUser.length >= 1) {
         return Boom.badRequest("A user with that email already exists");
       }
 
