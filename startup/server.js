@@ -5,7 +5,6 @@ const router = require("./router");
 const HapiSwagger = require("hapi-swagger");
 const Inert = require("@hapi/inert");
 const Vision = require("@hapi/vision");
-const JWT = require("jsonwebtoken");
 const jwtAuth = require("hapi-auth-jwt2");
 const Boom = require("@hapi/boom");
 
@@ -41,9 +40,7 @@ const init = async () => {
   };
   const keyFun = async (decoded) => {
     if (decoded) {
-      console.log(decoded);
       const key = process.env.API_KEY;
-      //console.log(key);
       if (key) {
         return { key, additonal: "Extra info here if required" };
       } else {
