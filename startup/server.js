@@ -6,7 +6,7 @@ const HapiSwagger = require("hapi-swagger");
 const Inert = require("@hapi/inert");
 const Vision = require("@hapi/vision");
 const jwtAuth = require("hapi-auth-jwt2");
-const Boom = require("@hapi/boom");
+const { validate, keyFun } = require("../src/authentication/strategy");
 
 const init = async () => {
   const server = Hapi.Server({
@@ -21,6 +21,7 @@ const init = async () => {
   };
 
   await server.register([
+    jwtAuth,
     Inert,
     Vision,
     {
@@ -28,30 +29,6 @@ const init = async () => {
       options: swaggerOptions,
     },
   ]);
-
-  const validate = async (decoded, request, h) => {
-    const credentials = decoded;
-
-    if (request.plugins["hapi-auth-jwt2"]) {
-      credentials.extraInfo = request.plugins["hapi-auth-jwt2"].extraInfo;
-      return { isValid: true, credentials };
-    }
-    return { isValid: false };
-  };
-  const keyFun = async (decoded) => {
-    if (decoded) {
-      const key = process.env.API_KEY;
-      if (key) {
-        return { key, additonal: "Extra info here if required" };
-      } else {
-        return Boom.unauthorized("Key not found");
-      }
-    } else {
-      return Boom.badRequest("Invalid user");
-    }
-  };
-
-  await server.register(jwtAuth);
   server.auth.strategy("jwt", "jwt", {
     key: keyFun,
     validate,
