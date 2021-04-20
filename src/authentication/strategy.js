@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const Boom = require("@hapi/boom");
 
 const validate = async (decoded, request, h) => {
