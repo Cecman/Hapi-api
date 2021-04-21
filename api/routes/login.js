@@ -1,5 +1,5 @@
 require("dotenv").config();
-const verifyUser = require("../../src/authentication/validateLoginCredentials");
+const verifyUser = require("../../src/authentication/validateLogin");
 const verifyLoginInput = require("../../src/authentication/verifyLoginInput");
 const asyncTcHandler = require("../../src/error");
 const loginHandler = require("../handlers/loginHandlers");

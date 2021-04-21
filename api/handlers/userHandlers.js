@@ -29,7 +29,6 @@ const updateUserHandler = async (request, h) => {
 
 const deleteUserHandler = async (request, h) => {
   const deletedUser = await deleteUserById(request.params.id);
-
   return h.response(deletedUser);
 };
 

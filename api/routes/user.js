@@ -4,7 +4,7 @@ const verifyUserInput = require("../../src/authentication/verifyUserInput");
 const {
   verifyUserEmail,
   verifyUserId,
-} = require("../../src/authentication/validateUserCredentials");
+} = require("../../src/authentication/validateUser");
 const {
   findUsersHandler,
   createUserHandler,
