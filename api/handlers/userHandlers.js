@@ -1,4 +1,5 @@
 const JWT = require("jsonwebtoken");
+const Boom = require("@hapi/boom");
 const { findAllUsers } = require("../../src/DB/findUser");
 const updateUserById = require("../../src/DB/updateUser");
 const createUser = require("../../src/DB/createUser");
@@ -6,6 +7,9 @@ const deleteUserById = require("../../src/DB/deleteUser");
 
 const findUsersHandler = async (request, h) => {
   const users = await findAllUsers();
+  if (users.length < 1) {
+    return Boom.notFound("There are no users registered");
+  }
   return h.response(users);
 };
 

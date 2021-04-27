@@ -12,15 +12,13 @@ const validate = async (decoded, request, h) => {
 };
 
 const keyFun = async (decoded) => {
-  if (decoded) {
-    const key = process.env.API_KEY;
-    if (key) {
-      return { key, additonal: "Extra info here if required" };
-    } else {
-      return Boom.unauthorized("Key not found");
-    }
+  if (!decoded) return Boom.badRequest("Invalid user");
+
+  const key = process.env.API_KEY;
+  if (key) {
+    return { key, additonal: "Extra info here if required" };
   } else {
-    return Boom.badRequest("Invalid user");
+    return Boom.unauthorized("Key not found");
   }
 };
 

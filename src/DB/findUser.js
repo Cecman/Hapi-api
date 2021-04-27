@@ -1,4 +1,5 @@
 const db = require("../../src/DB/connection");
+const Boom = require("@hapi/boom");
 
 const findAllUsers = async () => {
   const users = await new Promise((resolve, reject) => {
@@ -7,10 +8,6 @@ const findAllUsers = async () => {
       resolve(users);
     });
   });
-
-  if (users.length < 1) {
-    return Boom.notFound("There are no users registered");
-  }
   return users;
 };
 
@@ -35,4 +32,3 @@ const findUserById = async (id) => {
 };
 
 module.exports = { findUserByEmail, findUserById, findAllUsers };
-
